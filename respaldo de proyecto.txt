@@ -1,0 +1,143 @@
+from tkinter import *
+import sys
+bts=""   
+class Graph():
+    def __init__(self, vertices): 
+        self.V = vertices 
+        self.graph = [[0 for column in range(vertices)]  
+                    for row in range(vertices)] 
+    def printSolution(self, dist): 
+        bts="Vertice de distancias desde la fuente \n" 
+        for node in range(self.V):
+            bts=bts+str(node)+ "-> t ->"+ str(dist[node])+"\n"
+        return bts
+    def minDistance(self, dist, sptSet):
+        min = sys.maxsize 
+        for v in range(self.V): 
+            if dist[v] < min and sptSet[v] == False: 
+                min = dist[v] 
+                min_index = v 
+        return min_index  
+    def dijkstra(self, src,bts): 
+        dist = [sys.maxsize] * self.V 
+        dist[src] = 0
+        sptSet = [False] * self.V 
+        for cout in range(self.V): 
+            u = self.minDistance(dist, sptSet) 
+            sptSet[u] = True
+            for v in range(self.V): 
+                if (self.graph[u][v] > 0) and (sptSet[v] == False) and (dist[v] > dist[u] + self.graph[u][v]): 
+                    dist[v] = dist[u] + self.graph[u][v] 
+        bts=self.printSolution(dist)
+        return bts
+raiz =Tk()
+#ayuda en :https://docs.python.org/3.3/library/tk.html
+raiz.title("Algoritmos del Curso")
+raiz.config(width="1214",heig="545")
+#raiz.iconbitmap("espiral.ico")
+def CountingSort(A,B,k):
+	C=[]
+	X=[]
+	for i in range(k+1):
+		C.append(0)
+	for j in range(1,len(A)):
+		C[A[j]]=C[A[j]]+1
+	for x in range(1,k+1):
+		
+		C[x]=C[x]+C[x-1]
+	for y in range(len(A)-1):
+		B[C[A[len(A)-y-1]]]=A[len(A)-y-1]
+		C[A[len(A)-y-1]]=C[A[len(A)-y-1]]
+	#print(B)
+	for y in range(len(A)-1):
+		if(B[len(A)-y-2]==0):
+			B[len(A)-y-2]=B[len(A)-y-1]
+	for x in range(len(B)-1):
+		X.append(B[x+1])
+	return X
+
+
+def ShowFrame():
+	    frame1=Frame(raiz,width="750",height="1250").place(x=0,y=0)
+	    #Conjunto de imagenes que necesita el programa 
+	    Countboton=PhotoImage(file="countingsortboton.gif")
+	    Countdecrip=PhotoImage(file="countingimage.gif")
+	    Dijkstradecrip=PhotoImage(file="dijkstraimage.gif")
+	    dijkstraimage=PhotoImage(file="dijkstraboton.gif")
+	    botonCounting=Button(frame1,image=Countboton,command=lambda:ShowCounting()).place(x=10,y=10)
+	    Dijkstraboton=Button(frame1,image=dijkstraimage,command=lambda:ShowDijkstra()).place(x=140,y=10)
+	    def ShowCounting():
+	    	inputs=StringVar()
+	    	outputs=StringVar()
+	    	def ordenararreglo():
+	    		entrada=[]
+	    		auxiliar=[]
+	    		array=inputs.get()
+	    		array=array.split(",")
+	    		for i in range(len(array)):
+	    			entrada.append(int(array[i]))
+	    			auxiliar.append(0)
+	    		countsalida=CountingSort(entrada,auxiliar,max(entrada))
+	    		outputs.set(str(countsalida))
+
+	    	cuadroIn= Entry(frame1).place(x=600,y=90)
+	    	FrameCounting=Label(frame1,image=Countdecrip).place(x=420,y=0)
+	    	cuadroOutput=Entry(frame1,text=outputs,bg="white").place(x=588,y=137)
+	    	cuadroIn=Entry(frame1,text=inputs).place(x=600,y=90)
+	    	ordenarbotom=Button(frame1,text="Ordenar  ",command=lambda:ordenararreglo()).place(x=865,y=80)
+	    	botonSalir=Button(frame1,text="Salir del algoritmo",command=lambda:ShowFrame()).place(x=865,y=130)
+	    	cuadroIn.pack()
+	    	cuadroOutput.pack()
+	    	ordenarbotom.pack()
+	    	FrameCounting.pack()
+	    def ShowDijkstra():
+	    	input1=StringVar()
+	    	input2=StringVar()
+	    	input3=StringVar()
+	    	outputsdij=StringVar()
+	    	def getdata(dim,string):
+	    		var=string
+	    		vec=[]
+	    		aux=""
+	    		for i in range(len(var)):
+	    			if((var[i]!='[') and (var[i]!=']') and (var[i]!='')):
+	    				aux=aux+var[i]
+	    			array=aux.split(",")
+	    		aux2=[]
+	    		for y in range(dim**2):
+	    			aux2.append(int(array[y]))
+	    		for x in range(dim):
+	    			vec.append(aux2[dim*x:dim*x+dim])
+	    		return vec
+	    	def calcularRuta():
+	    		numnodos=int(input1.get())
+	    		nodoinicial=int(input2.get())
+	    		g = Graph(numnodos) 
+	    		g.graph=getdata(numnodos,input3.get()) 
+	    		cuadroIn4=Label(frame1,text=g.dijkstra(nodoinicial,""),height=13,width=30,bg="white").place(x=910,y=132)
+
+	    	FrameDijkstra=Label(frame1,image=Dijkstradecrip).place(x=420,y=0)
+	    	cuadroIn1=Entry(frame1,text=input1).place(x=535,y=145)
+	    	cuadroIn2=Entry(frame1,text=input2).place(x=535,y=185)
+	    	cuadroIn3=Entry(frame1,text=input3).place(x=535,y=225)
+	    	caldulaboton=Button(frame1,text="Calcula",command=lambda:calcularRuta()).place(x=720,y=143)
+	    	botonSalirDijkstra=Button(frame1,text="Salir del algoritmo",command=lambda:ShowFrame()).place(x=720,y=173)
+	    	cuadroIn1.pack()
+	    	botonSalirDijkstra.pack()
+	    	cuadroIn2.pack()
+	    	cuadroIn3.pack()
+	    	caldulaboton.pack()
+	    	FrameDijkstra.pack()
+
+
+	    botonCounting.pack()
+	    frame1.pack()
+
+#-------------------------------------------------------------------------------------
+portada=PhotoImage(file="PORTADA.gif")
+botonComenzar=PhotoImage(file="botonInicio.gif")
+Label(raiz,image=portada).pack()
+botonInicio=Button(raiz,image=botonComenzar,command=lambda:ShowFrame()).place(x=395,y=307)
+#-------------------------------------------------------------------------------------
+
+raiz.mainloop()
